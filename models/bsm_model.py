@@ -1,4 +1,4 @@
-from .base_model import PricingMethod
+from base_model import PricingMethod
 from scipy import stats
 import numpy as np
 
@@ -35,3 +35,13 @@ class BSM(PricingMethod):
 
     def _calculate_put_option_price(self, S, K, T, r, sigma):
         return NotImplementedError
+
+if __name__ == "__main__":
+    S = 182.52
+    K = 200.77
+    T = 5
+    r = 0
+    sigma = 0.1474
+    method = BSM()
+    price = method.price(option_type="call", S=S, K=K, T=T, r=r, sigma=sigma)
+    print(price)

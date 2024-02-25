@@ -80,7 +80,7 @@ st.write("The following values will be used for the evaluation:")
 st.write("Today's price:", data[-1])
 st.write("Strike price:", number)
 st.write("Maturity:", 5)
-st.write("Risk free rate:", 0)
+st.write("Risk free rate:", 0.02)
 st.write("Volatility:", volatility[-1])
 
 price = method.price(option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1])
