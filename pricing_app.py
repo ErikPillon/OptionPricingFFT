@@ -75,7 +75,6 @@ st.markdown(f"Evaluating the {option} using the {method} method. Last price: {da
 method = get_method(method)
 
 volatility = get_volatility(data=data)
-print(volatility)
 
 st.write("The following values will be used for the evaluation:")
 st.write("Today's price:", data[-1])
