@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 
 import plotly.express as px 
-import matplotlib.pyplot as plt
 
 from fetcher import Fetcher
 from models import BSM, PricingMethod
@@ -101,4 +100,30 @@ See also:
     
 price = calc_method.price(option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1])
 
-st.markdown(f"Option price: {price}")
+st.header("Results")
+st.subheader(f"Option price: {price}")
+
+if method == "Black-Scholes-Merton":
+    st.write("**Some notes on the Black-Scholes-Merton model**")
+    st.write("The Black-Scholes-Merton (BSM) model formula for a European call option is given by:")
+    st.latex(r"""
+    \begin{equation*}
+    C = S_0 \cdot N(d_1) - X \cdot e^{-rT} \cdot N(d_2)
+    \end{equation*}
+    """)
+    st.write("where:")
+    st.latex(r"""
+    \begin{align*}
+    S_0 &\text{ is the current stock price,} \\
+    X &\text{ is the strike price,} \\
+    T &\text{ is the time to maturity,} \\
+    r &\text{ is the risk-free interest rate,}
+    \end{align*} 
+    """)
+    st.write("and:")
+    st.latex(r"""
+    N(d_1) \text{ and } N(d_2) \text{ are the cumulative distribution functions of the standard normal distribution, where}
+    \\
+    d_1 = \frac{\ln\left(\frac{S_0}{X}\right) + \left(r + \frac{\sigma^2}{2}\right)T}{\sigma\sqrt{T}} \\
+    d_2 = d_1 - \sigma\sqrt{T}
+    """)
