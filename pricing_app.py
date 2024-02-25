@@ -69,7 +69,7 @@ Inspiration for this work came from the wonderful work performed by [Nikola Kriv
 st.subheader('Time Series Performance')
 
 data = get_historical_data(ticker)["Close"]
-fig1 = px.line(data, x="year", y="Closing Value", title=f'Time Series Performance ({ticker})')
+fig1 = px.line(data, title=f'Time Series Performance ({ticker})')
 
 st.plotly_chart(fig1)
 
