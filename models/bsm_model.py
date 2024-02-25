@@ -1,4 +1,4 @@
-from base_model import PricingMethod
+from .base_model import PricingMethod
 from scipy import stats
 import numpy as np
 

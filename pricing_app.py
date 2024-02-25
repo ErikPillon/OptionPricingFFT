@@ -38,6 +38,11 @@ st.sidebar.markdown(
     "Indipendent project developed by [Erik Pillon](https://ErikPillon.github.io) for the pricing evaluation of put-call options with different numerical and analytical methods."
 )
 
+st.sidebar.header("Model Parameters")
+st.sidebar.markdown(
+    "Use the sidebar selectors below to adjust the parameters of the model."
+)
+
 option_types = ["Call Option", "Put Option"]
 option = st.sidebar.selectbox("Select option type", option_types)
 
@@ -47,14 +52,16 @@ method = st.sidebar.selectbox("Select method", methods)
 tickers = ["AAPL", "AMZN", "GOOG", "TSLA"]
 ticker = st.sidebar.selectbox("Select ticker", tickers)
 
+maturity = st.sidebar.slider('Maturity (years)', 0.0, 20.0, 5.0)  # min, max, default
+
 st.sidebar.header("Additional Resources")
 st.sidebar.markdown(
     """
-- [Option Pricing Specialization On Coursera]()
+- [Option Pricing Specialization On Coursera](https://www.coursera.org/learn/financial-engineering-computationalmethods)
 - [FFT visual explanation]()
 - [FFT introduction]()
 
-Inspiration for this work came from the wonderful work performed by [XYZ](https://github.com/)
+Inspiration for this work came from the wonderful work performed by [Nikola Krivacevic](https://github.com/mcf-long-short/option-pricing-fourier-transform/tree/main)
 """
 )
 
@@ -62,7 +69,7 @@ Inspiration for this work came from the wonderful work performed by [XYZ](https:
 st.subheader('Time Series Performance')
 
 data = get_historical_data(ticker)["Close"]
-fig1 = px.line(data)
+fig1 = px.line(data, x="year", y="Closing Value", title=f'Time Series Performance ({ticker})')
 
 st.plotly_chart(fig1)
 
@@ -72,17 +79,26 @@ st.write("currently selected: ", number)
 
 st.markdown(f"Evaluating the {option} using the {method} method. Last price: {data[-1]} and selected strike price: {number}")
 
-method = get_method(method)
+calc_method = get_method(method)
 
 volatility = get_volatility(data=data)
 
 st.write("The following values will be used for the evaluation:")
 st.write("Today's price:", data[-1])
 st.write("Strike price:", number)
-st.write("Maturity:", 5)
+st.write("Maturity:", maturity)
 st.write("Risk free rate:", 0.02)
 st.write("Volatility:", volatility[-1])
 
-price = method.price(option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1])
+with st.expander("Notes about the volatility calculation"):
+    st.markdown("""
+* Volatility is calculated using the historical data of the asset.
+* The annualized volatility of the last 20 returns of the historical data is used for the evaluation.
+
+See also:
+ * [Historical Volatility vs. Implied Volatility](https://www.investopedia.com/ask/answers/060115/how-implied-volatility-used-blackscholes-formula.asp#:~:text=Plugging%20the%20option%27s%20price%20into,implied%20by%20the%20option%20price.)
+""")
+    
+price = calc_method.price(option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1])
 
 st.markdown(f"Option price: {price}")
