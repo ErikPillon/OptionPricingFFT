@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-import plotly.express as px 
+import plotly.express as px
 
 from fetcher import Fetcher
 from models import BSM, PricingMethod
@@ -12,10 +12,12 @@ from models import BSM, PricingMethod
 
 st.title("Option Pricing via Fourier Transform")
 
+
 @st.cache_data
 def get_historical_data(symbol: str):
     fetcher = Fetcher(symbol)
     return fetcher.get_stock_option_data()
+
 
 def get_method(method: str, *args, **kwargs) -> PricingMethod:
     if method == "Black-Scholes-Merton":
@@ -25,11 +27,13 @@ def get_method(method: str, *args, **kwargs) -> PricingMethod:
     else:
         raise Exception("Wrong method")
 
+
 def get_volatility(data: pd.Series):
     daily_returns = data.pct_change().dropna()
     volatility = daily_returns.rolling(window=20).std().dropna()
     annaualized_volatility = volatility * np.sqrt(252)
     return annaualized_volatility
+
 
 # Sidebar
 st.sidebar.header("About")
@@ -51,7 +55,7 @@ method = st.sidebar.selectbox("Select method", methods)
 tickers = ["AAPL", "AMZN", "GOOG", "TSLA"]
 ticker = st.sidebar.selectbox("Select ticker", tickers)
 
-maturity = st.sidebar.slider('Maturity (years)', 0.0, 20.0, 5.0)  # min, max, default
+maturity = st.sidebar.slider("Maturity (years)", 0.0, 20.0, 5.0)  # min, max, default
 
 st.sidebar.header("Additional Resources")
 st.sidebar.markdown(
@@ -65,18 +69,22 @@ Inspiration for this work came from the wonderful work performed by [Nikola Kriv
 )
 
 
-st.subheader('Time Series Performance')
+st.subheader("Time Series Performance")
 
 data = get_historical_data(ticker)["Close"]
-fig1 = px.line(data, title=f'Time Series Performance ({ticker})')
+fig1 = px.line(data, title=f"Time Series Performance ({ticker})")
 
 st.plotly_chart(fig1)
 
-st.subheader('Option Price Evaluation')
-number = st.number_input("Insert the strike value", value=data[-1]*1.1, placeholder="Type a number...")
+st.subheader("Option Price Evaluation")
+number = st.number_input(
+    "Insert the strike value", value=data[-1] * 1.1, placeholder="Type a number..."
+)
 st.write("currently selected: ", number)
 
-st.markdown(f"Evaluating the {option} using the {method} method. Last price: {data[-1]} and selected strike price: {number}")
+st.markdown(
+    f"Evaluating the {option} using the {method} method. Last price: {data[-1]} and selected strike price: {number}"
+)
 
 calc_method = get_method(method)
 
@@ -97,15 +105,19 @@ with st.expander("Notes about the volatility calculation"):
 See also:
  * [Historical Volatility vs. Implied Volatility](https://www.investopedia.com/ask/answers/060115/how-implied-volatility-used-blackscholes-formula.asp#:~:text=Plugging%20the%20option%27s%20price%20into,implied%20by%20the%20option%20price.)
 """)
-    
-price = calc_method.price(option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1])
+
+price = calc_method.price(
+    option_type="call", S=data[-1], K=number, T=5, r=0.02, sigma=volatility[-1]
+)
 
 st.header("Results")
 st.subheader(f"Option price: {price}")
 
 if method == "Black-Scholes-Merton":
     st.write("**Some notes on the Black-Scholes-Merton model**")
-    st.write("The Black-Scholes-Merton (BSM) model formula for a European call option is given by:")
+    st.write(
+        "The Black-Scholes-Merton (BSM) model formula for a European call option is given by:"
+    )
     st.latex(r"""
     \begin{equation*}
     C = S_0 \cdot N(d_1) - X \cdot e^{-rT} \cdot N(d_2)
